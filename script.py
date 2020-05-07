@@ -64,6 +64,13 @@ def get_details(url):
                 set_list = info_value  
             elif info_heading == 'Layout/Format':
                 layout_format = info_value  
+                layout_img = ''
+                try:
+                    layout_img_href = info_item.find_next().select('a')[0].get('href')
+                    if layout_img_href:
+                        layout_img = base_url + layout_img_href
+                except:
+                    pass
             elif info_heading == 'Perforations':
                 perforations = info_value                  
             elif info_heading == 'Stamp issuing authority':
@@ -95,22 +102,14 @@ def get_details(url):
     # image_urls should be a list
     images = []                    
     try:
-        image_items = html.select('.anythingSlider img')
-        for image_item in image_items:
-            img_src = image_item.get('src').replace('-50.jpg', '.jpg')
-            set_item_parts = img_src.split('/')
-            set_item = set_item_parts[-1].replace('.jpg', '')
-            set_list.append(set_item)
-            img = base_url + img_src
-            if img not in images:
-                images.append(img)
-        
-        if not len(images):
-            image_items = html.select('.stamp_info center a')
-            for image_item in image_items:
-                img = base_url + image_item.get('href')
-                if img not in images:
-                    images.append(img)
+        image_href = html.select('.stamp_info center a')[0].get('href')
+        img = base_url + image_href
+        if img not in images:
+           images.append(img)
+                
+        if layout_img and (layout_img not in images):
+            images.append(layout_img)
+           
     except:
         pass
     
