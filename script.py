@@ -59,7 +59,10 @@ def get_details(url):
             elif info_heading == 'Denomination':
                 denomination = info_value                   
             elif info_heading == 'Number in set':
-                number_in_set = info_value  
+                number_in_set = info_value 
+                if '\n' in number_in_set:
+                    number_in_set_parts = number_in_set.split('\n')
+                    number_in_set = number_in_set_parts[0].strip()
             elif info_heading == 'set list':
                 set_list = info_value  
             elif info_heading == 'Layout/Format':
@@ -97,8 +100,6 @@ def get_details(url):
     except:
         stamp['wns'] = None      
         
-    set_list = []  
-
     # image_urls should be a list
     images = []                    
     try:
@@ -109,9 +110,19 @@ def get_details(url):
                 
         if layout_img and (layout_img not in images):
             images.append(layout_img)
-           
     except:
         pass
+    
+    set_list = []  
+    try:
+        set_items = html.select('.anythingSlider img')
+        for set_item in set_items:
+            img_src = set_item.get('src').replace('-50.jpg', '.jpg')
+            set_item_parts = img_src.split('/')
+            set_item = set_item_parts[-1].replace('.jpg', '')
+            set_list.append(set_item)
+    except:
+        pass 
     
     stamp['set_list'] = set_list
     stamp['image_urls'] = images 
